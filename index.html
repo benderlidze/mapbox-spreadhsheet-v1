@@ -118,25 +118,33 @@
             transform: translate(-50%, -50%);
         }
 
-        #autocomplete {
-            box-sizing: border-box;
-            padding: 10px;
+        #infoDiv {
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            background-color: #fff;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
             position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 10;
+            width: fit-content;
+            top: 10px;
+            left: 10px;
+            padding: 10px;
+            z-index: 100;
         }
     </style>
 </head>
 
 <body>
     <!-- <div id="filters"></div> -->
-    <input id="autocomplete" placeholder="Enter your address" type="text"></input>
+    <div id="infoDiv">
+        <h2>Immersive Spaces</h2>
+    </div>
+
     <div id="map"></div>
     <script>
 
-        // const switchersEnableDiv = document.getElementById("filters")
 
+        // const switchersEnableDiv = document.getElementById("filters")
+        const switchersEnableDiv = document.getElementById("infoDiv")
         mapboxgl.accessToken = 'pk.eyJ1Ijoic3dlcnQiLCJhIjoiY2s3bHNtdjF2MDJ1eTNmcGowanU5MHR4ZiJ9.hzhWj9bhgD5itpWAPc3nNA';
         const map = new mapboxgl.Map({
             container: 'map',
@@ -152,17 +160,17 @@
             filters: new Set()
         };
 
-        const types = {
-            "Tech startup": "#00fa80",
-            "Production company": "#00dfe6",
-            "Distribution company": "#ff6000",
-            "Venues": "#b200ff",
-            "Incubator": "#e6ff00",
-            "Accelerator": "#7788f8",
-            "VC Funds / Private investors": "#ff3f9e",
-            "Festivals & conferences": "#f87777",
-            "Education": "#228ea7",
-        }
+        const types = [
+            { name: "Tech startup", color: "#00fa80" },
+            { name: "Production company", color: "#00dfe6" },
+            { name: "Distribution company", color: "#ff6000" },
+            { name: "Venues", color: "#b200ff" },
+            { name: "Incubator", color: "#e6ff00" },
+            { name: "Accelerator", color: "#7788f8" },
+            { name: "VC Funds / Private investors", color: "#ff3f9e" },
+            { name: "Festivals & conferences", color: "#f87777" },
+            { name: "Education", color: "#228ea7" },
+        ]
 
         map.on('load', () => {
 
@@ -184,13 +192,13 @@
             d3.csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vSdK8xBdWNH6TONghiqcBD3z9Y1VdodfYEOO68lxQDvObv2MePQeMiy3gG6le9XOACpTJPpC6nRN7PZ/pub?output=csv')
                 .then(arr => {
 
+                    console.log('arr', arr);
                     const pins = arr
                         //.filter(pin => +pin.lat >= -90 && +pin.lat <= 90)
                         .map(pin => {
                             const { lat, lon, Name, Category } = pin
-                            const color = types[Category] ? types[Category] : "red"
-
-
+                            const cat = types.find(d => d.name === Category)
+                            const color = cat ? cat.color : "red"
 
                             const descr = pin['Short description']
                             const addr = pin['Location (address)']
@@ -218,14 +226,54 @@
                                 .setLngLat([+lon, +lat])
                                 .addTo(map);
 
-                            // return turf.point([+lon, +lat], {
-                            //     color,
-                            //     name,
-                            //     type: Category,
-                            //     ...pin
-                            // });
-
+                            main.data.push({
+                                type: Category,
+                                marker
+                            })
                         });
+
+                    switchersEnableDiv.appendChild(buildSwitcher("Select All / Deselect All", checked => {
+                        document.getElementsByTagName("input")
+                        if (checked) {
+                            types.forEach(d => main.filters.add(d.name))
+                            document.querySelectorAll(".checkbox").forEach(d => d.checked = true)
+                        } else {
+                            main.filters.clear()
+                            document.querySelectorAll(".checkbox").forEach(d => d.checked = false)
+                        }
+
+                        main.data.forEach(m => {
+                            console.log('m', m);
+                            checked ? m.marker.addTo(map) : m.marker.remove()
+                        })
+
+                    }, true))
+
+
+                    const venue = [...new Set(arr.map(pin => pin['Category']))]
+
+                    venue.map(d => {
+
+                        main.filters.add(d)
+                        switchersEnableDiv.appendChild(buildSwitcher(d, checked => {
+
+                            console.log('d', d);
+                            if (checked) {
+                                main.filters.add(d)
+                            } else {
+                                main.filters.delete(d)
+                            }
+                            //update pins 
+                            main.data
+                                .filter(f => f.type === d).forEach(m => {
+                                    console.log('m', m);
+                                    checked ? m.marker.addTo(map) : m.marker.remove()
+                                })
+
+                        }, true))
+                    })
+
+
                     //map.getSource("main").setData(turf.featureCollection(pins))
                     //loading.style.display = "none"
                 })
@@ -283,118 +331,54 @@
 
         });
 
-        // switchersEnableDiv.appendChild(buildSwitcher("Satellite", checked => {
-        //     const display = checked ? "visible" : "none"
-        //     map.setLayoutProperty('satellite', 'visibility', display);
-        // }, false))
-
-        function buildData(json, layerName, color) {
-            json
-                .filter(d => d['Latitude Decimal'])
-                .forEach(d => {
-                    d.lat = +d['Latitude Decimal'].replace(",", ".")
-                    d.lon = +d['Longitude Decimal'].replace(",", ".")
-                })
-            const pins = json
-                .filter(pin => +pin.lat >= -90 && +pin.lat <= 90)
-                .map(pin => {
-                    const { lat, lon, name, type } = pin
-                    const colorIndex = Array.from(main.filters).indexOf(type)
-                    return turf.point([lon, lat], {
-                        color,
-                        name,
-                        type,
-                        ...pin
-                    });
-                });
-            main.data.push({ layer: layerName, data: pins })
-            return pins
-        }
-
-        // function filterData() {
-        //     const pins = main.data.filter(pin => {
-        //         const filter = Array.from(main.filters)
-        //         return filter.includes(pin.properties.type)
-        //     })
-        //     map.getSource("main").setData(turf.featureCollection(pins))
-        // }
 
 
-        // function buildCheckBox({ initState = "checked", name, callback, labelCallback, plusShow = true, plusCallback, tooltip }) {
-        //     const div = document.createElement('div');
-        //     div.className = 'check-item'
+        function buildSwitcher(labelText, action, checked = true) {
 
-        //     const checkbox = document.createElement('input');
-        //     checkbox.checked = initState
-        //     checkbox.dataset.circuit = name
-        //     checkbox.type = "checkbox";
-        //     checkbox.name = "name";
-        //     checkbox.value = "value";
-        //     checkbox.id = "";
-        //     checkbox.addEventListener("change", () => {
-        //         if (typeof callback === "function") callback(checkbox.checked)
-        //     })
+            const div = document.createElement("div")
+            div.className = "switcher-div"
 
-        //     const label = document.createElement('span')
-        //     label.htmlFor = "";
-        //     label.className = 'tooltip-container cooltipz--top cooltipz--static'
-        //     label.appendChild(document.createTextNode(name));
+            const label = document.createElement("label")
+            label.className = "switch"
 
-        //     div.appendChild(checkbox);
-        //     div.appendChild(label);
+            const checkbox = document.createElement("input")
+            checkbox.type = "checkbox"
+            checkbox.className = "checkbox"
+            checkbox.checked = checked
+            checkbox.addEventListener("input", () => {
+                if (typeof action === "function") {
+                    action(checkbox.checked)
+                }
+            })
 
-        //     return div
-        // }
+            const span = document.createElement("span")
+            span.className = "slider round"
 
-        // function buildSwitcher(labelText, action, checked = true) {
+            const pinColor = types.find(d => d.name.toLowerCase() === labelText.toLowerCase())
 
-        //     const div = document.createElement("div")
-        //     div.className = "switcher-div"
+            const color = document.createElement("div")
+            color.style.width = "10px"
+            color.style.height = "10px"
+            color.style.backgroundColor = pinColor ? pinColor.color : "black"
+            color.style.borderRadius = "10px"
+            color.style.border = "2px solid #2196f3"
 
-        //     const label = document.createElement("label")
-        //     label.className = "switch"
+            const text = document.createElement("div")
+            text.innerText = labelText
 
-        //     const checkbox = document.createElement("input")
-        //     checkbox.type = "checkbox"
-        //     checkbox.checked = checked
-        //     checkbox.addEventListener("input", () => {
-        //         if (typeof action === "function") {
-        //             action(checkbox.checked)
-        //         }
-        //     })
+            label.appendChild(checkbox)
+            label.appendChild(span)
 
-        //     const span = document.createElement("span")
-        //     span.className = "slider round"
+            div.appendChild(label)
+            div.appendChild(color)
+            div.appendChild(text)
 
-        //     const text = document.createElement("div")
-        //     text.innerText = labelText
-
-        //     label.appendChild(checkbox)
-        //     label.appendChild(span)
-
-        //     div.appendChild(label)
-        //     div.appendChild(text)
-
-        //     return div
-        // }
-
-        function initAutocomplete() {
-            const autocomplete = new google.maps.places.Autocomplete((document.getElementById('autocomplete')), {
-                types: ['geocode'],
-            });
-            autocomplete.addListener('place_changed', () => {
-                const place = autocomplete.getPlace();
-                const coords = place.geometry.location
-                const lat = coords.lat()
-                const lng = coords.lng()
-                map.flyTo({ center: [+lng, +lat], zoom: 10 });
-            });
+            console.log('div', div);
+            return div
         }
 
     </script>
-    <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAoyZ_yVsI5N8KhjbWRyQeme1Pfz2DRYYc&libraries=places&callback=initAutocomplete"
-        async defer></script>
+
 
 </body>
 
