@@ -117,11 +117,21 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
+
+        #autocomplete {
+            box-sizing: border-box;
+            padding: 10px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+        }
     </style>
 </head>
 
 <body>
     <!-- <div id="filters"></div> -->
+    <input id="autocomplete" placeholder="Enter your address" type="text"></input>
     <div id="map"></div>
     <script>
 
@@ -133,7 +143,8 @@
             zoom: 2.7,
             center: { lng: -100.24484896840363, lat: 29.50674119154816 },
             // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
-            style: 'mapbox://styles/swert/clchjpl2s004j14mrgsa0tc71'
+            style: 'mapbox://styles/swert/clchjpl2s004j14mrgsa0tc71',
+            projection: 'mercator'
         });
 
         const main = {
@@ -188,14 +199,17 @@
                             const phone = pin['Contact (phone)']
                             const contName = pin['Contact (name)']
 
+                            // <div><a href="${web}">Link site</a></div>
+                            //     <div><a href="${rel}">Relevant projects</a></div>
+                            //     <div><b>${contName}:${phone}</b></div>
+                            // <div>${descr}</div>
+
                             const text = `
                                 <h1>${Name}</h1>
-                                <div><b>Category: ${Category}</b></div>
-                                <div>${descr}</div>
-                                <div><b>${addr}</b></div>
-                                <div><a href="${web}">Link site</a></div>
-                                <div><a href="${rel}">Relevant projects</a></div>
-                                <div><b>${contName}:${phone}</b></div>
+                                <div><b>Category:</b> ${Category}</div>
+                                <div>${addr}</div>
+                                <div><b>Site:</b> <a href="https://bezel.it">bezel.it</a></div>
+                                <div><b>Relevant projects:</b> <a href="https://bezel.it/showcase">bezel.it/showcase</a></div>
                             `
 
                             const marker = new mapboxgl.Marker({ color })
@@ -363,7 +377,23 @@
         //     return div
         // }
 
+        function initAutocomplete() {
+            const autocomplete = new google.maps.places.Autocomplete((document.getElementById('autocomplete')), {
+                types: ['geocode'],
+            });
+            autocomplete.addListener('place_changed', () => {
+                const place = autocomplete.getPlace();
+                const coords = place.geometry.location
+                const lat = coords.lat()
+                const lng = coords.lng()
+                map.flyTo({ center: [+lng, +lat], zoom: 10 });
+            });
+        }
+
     </script>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAoyZ_yVsI5N8KhjbWRyQeme1Pfz2DRYYc&libraries=places&callback=initAutocomplete"
+        async defer></script>
 
 </body>
 
