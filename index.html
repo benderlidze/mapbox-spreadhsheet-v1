@@ -170,8 +170,6 @@
                 'Location (address)',
             ]
 
-
-
             d3.csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vSdK8xBdWNH6TONghiqcBD3z9Y1VdodfYEOO68lxQDvObv2MePQeMiy3gG6le9XOACpTJPpC6nRN7PZ/pub?output=csv')
                 .then(arr => {
 
@@ -181,15 +179,39 @@
                             const { lat, lon, Name, Category } = pin
                             const color = types[Category] ? types[Category] : "red"
 
-                            console.log('color', color);
-                            return turf.point([+lon, +lat], {
-                                color,
-                                name,
-                                type: Category,
-                                ...pin
-                            });
+
+
+                            const descr = pin['Short description']
+                            const addr = pin['Location (address)']
+                            const web = pin['Link site']
+                            const rel = pin['Relevant projects (link)']
+                            const phone = pin['Contact (phone)']
+                            const contName = pin['Contact (name)']
+
+                            const text = `
+                                <h1>${Name}</h1>
+                                <div><b>Category: ${Category}</b></div>
+                                <div>${descr}</div>
+                                <div><b>${addr}</b></div>
+                                <div><a href="${web}">Link site</a></div>
+                                <div><a href="${rel}">Relevant projects</a></div>
+                                <div><b>${contName}:${phone}</b></div>
+                            `
+
+                            const marker = new mapboxgl.Marker({ color })
+                                .setPopup(new mapboxgl.Popup().setHTML(text)) // add 
+                                .setLngLat([+lon, +lat])
+                                .addTo(map);
+
+                            // return turf.point([+lon, +lat], {
+                            //     color,
+                            //     name,
+                            //     type: Category,
+                            //     ...pin
+                            // });
+
                         });
-                    map.getSource("main").setData(turf.featureCollection(pins))
+                    //map.getSource("main").setData(turf.featureCollection(pins))
                     //loading.style.display = "none"
                 })
 
