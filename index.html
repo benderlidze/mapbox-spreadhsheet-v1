@@ -121,13 +121,11 @@
 </head>
 
 <body>
-    <div id="loading">Loading data...</div>
-    <div id="filters"></div>
+    <!-- <div id="filters"></div> -->
     <div id="map"></div>
     <script>
 
-        const switchersEnableDiv = document.getElementById("filters")
-        const loading = document.getElementById("loading")
+        // const switchersEnableDiv = document.getElementById("filters")
 
         mapboxgl.accessToken = 'pk.eyJ1Ijoic3dlcnQiLCJhIjoiY2s3bHNtdjF2MDJ1eTNmcGowanU5MHR4ZiJ9.hzhWj9bhgD5itpWAPc3nNA';
         const map = new mapboxgl.Map({
@@ -143,18 +141,6 @@
             filters: new Set()
         };
 
-        const colorArray = ['#FFFF99', '#00B3E6',
-            '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
-            '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
-            '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
-            '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
-            '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
-            '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
-            '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
-            '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
-            '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
-
-
         const types = {
             "Tech startup": "#00fa80",
             "Production company": "#00dfe6",
@@ -169,24 +155,19 @@
 
         map.on('load', () => {
 
-            map.addLayer({
-                id: 'satellite',
-                source: { "type": "raster", "url": "mapbox://mapbox.satellite", "tileSize": 256 },
-                type: "raster",
-                layout: {
-                    visibility: 'none'
-                }
-            });
+            // map.addLayer({
+            //     id: 'satellite',
+            //     source: { "type": "raster", "url": "mapbox://mapbox.satellite", "tileSize": 256 },
+            //     type: "raster",
+            //     layout: {
+            //         visibility: 'none'
+            //     }
+            // });
 
             const fieldsToDisplay = [
-                'Project No.',
-                'Company',
-                'Postcode',
-                'FRA',
-                'Product ↵4 or 6',
-                'Ceremonial County',
-                'Ceremonial County',
-                'Region',
+                'Name',
+                'Short description',
+                'Location (address)',
             ]
 
 
@@ -209,7 +190,7 @@
                             });
                         });
                     map.getSource("main").setData(turf.featureCollection(pins))
-                    loading.style.display = "none"
+                    //loading.style.display = "none"
                 })
 
             map.addSource('main', {
@@ -265,10 +246,10 @@
 
         });
 
-        switchersEnableDiv.appendChild(buildSwitcher("Satellite", checked => {
-            const display = checked ? "visible" : "none"
-            map.setLayoutProperty('satellite', 'visibility', display);
-        }, false))
+        // switchersEnableDiv.appendChild(buildSwitcher("Satellite", checked => {
+        //     const display = checked ? "visible" : "none"
+        //     map.setLayoutProperty('satellite', 'visibility', display);
+        // }, false))
 
         function buildData(json, layerName, color) {
             json
@@ -293,72 +274,72 @@
             return pins
         }
 
-        function filterData() {
-            const pins = main.data.filter(pin => {
-                const filter = Array.from(main.filters)
-                return filter.includes(pin.properties.type)
-            })
-            map.getSource("main").setData(turf.featureCollection(pins))
-        }
+        // function filterData() {
+        //     const pins = main.data.filter(pin => {
+        //         const filter = Array.from(main.filters)
+        //         return filter.includes(pin.properties.type)
+        //     })
+        //     map.getSource("main").setData(turf.featureCollection(pins))
+        // }
 
 
-        function buildCheckBox({ initState = "checked", name, callback, labelCallback, plusShow = true, plusCallback, tooltip }) {
-            const div = document.createElement('div');
-            div.className = 'check-item'
+        // function buildCheckBox({ initState = "checked", name, callback, labelCallback, plusShow = true, plusCallback, tooltip }) {
+        //     const div = document.createElement('div');
+        //     div.className = 'check-item'
 
-            const checkbox = document.createElement('input');
-            checkbox.checked = initState
-            checkbox.dataset.circuit = name
-            checkbox.type = "checkbox";
-            checkbox.name = "name";
-            checkbox.value = "value";
-            checkbox.id = "";
-            checkbox.addEventListener("change", () => {
-                if (typeof callback === "function") callback(checkbox.checked)
-            })
+        //     const checkbox = document.createElement('input');
+        //     checkbox.checked = initState
+        //     checkbox.dataset.circuit = name
+        //     checkbox.type = "checkbox";
+        //     checkbox.name = "name";
+        //     checkbox.value = "value";
+        //     checkbox.id = "";
+        //     checkbox.addEventListener("change", () => {
+        //         if (typeof callback === "function") callback(checkbox.checked)
+        //     })
 
-            const label = document.createElement('span')
-            label.htmlFor = "";
-            label.className = 'tooltip-container cooltipz--top cooltipz--static'
-            label.appendChild(document.createTextNode(name));
+        //     const label = document.createElement('span')
+        //     label.htmlFor = "";
+        //     label.className = 'tooltip-container cooltipz--top cooltipz--static'
+        //     label.appendChild(document.createTextNode(name));
 
-            div.appendChild(checkbox);
-            div.appendChild(label);
+        //     div.appendChild(checkbox);
+        //     div.appendChild(label);
 
-            return div
-        }
+        //     return div
+        // }
 
-        function buildSwitcher(labelText, action, checked = true) {
+        // function buildSwitcher(labelText, action, checked = true) {
 
-            const div = document.createElement("div")
-            div.className = "switcher-div"
+        //     const div = document.createElement("div")
+        //     div.className = "switcher-div"
 
-            const label = document.createElement("label")
-            label.className = "switch"
+        //     const label = document.createElement("label")
+        //     label.className = "switch"
 
-            const checkbox = document.createElement("input")
-            checkbox.type = "checkbox"
-            checkbox.checked = checked
-            checkbox.addEventListener("input", () => {
-                if (typeof action === "function") {
-                    action(checkbox.checked)
-                }
-            })
+        //     const checkbox = document.createElement("input")
+        //     checkbox.type = "checkbox"
+        //     checkbox.checked = checked
+        //     checkbox.addEventListener("input", () => {
+        //         if (typeof action === "function") {
+        //             action(checkbox.checked)
+        //         }
+        //     })
 
-            const span = document.createElement("span")
-            span.className = "slider round"
+        //     const span = document.createElement("span")
+        //     span.className = "slider round"
 
-            const text = document.createElement("div")
-            text.innerText = labelText
+        //     const text = document.createElement("div")
+        //     text.innerText = labelText
 
-            label.appendChild(checkbox)
-            label.appendChild(span)
+        //     label.appendChild(checkbox)
+        //     label.appendChild(span)
 
-            div.appendChild(label)
-            div.appendChild(text)
+        //     div.appendChild(label)
+        //     div.appendChild(text)
 
-            return div
-        }
+        //     return div
+        // }
 
     </script>
 
