@@ -130,13 +130,20 @@
             padding: 10px;
             z-index: 100;
         }
+
+        h1 {
+            margin-bottom: 0;
+            padding-bottom: 0;
+
+        }
     </style>
 </head>
 
 <body>
     <!-- <div id="filters"></div> -->
     <div id="infoDiv">
-        <h2>Immersive Spaces</h2>
+        <h1>New Media Network</h1>
+        by Garage Stories
     </div>
 
     <div id="map"></div>
@@ -167,7 +174,7 @@
             { name: "Venues", color: "#b200ff" },
             { name: "Incubator", color: "#e6ff00" },
             { name: "Accelerator", color: "#7788f8" },
-            { name: "VC Funds / Private investors", color: "#ff3f9e" },
+            { name: "VC Funds / Private investors", color: "#ccc8f1" },
             { name: "Festivals & conferences", color: "#f87777" },
             { name: "Education", color: "#228ea7" },
         ]
@@ -214,11 +221,13 @@
 
                             const text = `
                                 <h1>${Name}</h1>
+                                <div style="margin-top:10px;">
                                 <div>${descr}</div>
                                 <div><b>Category:</b> ${Category}</div>
                                 <div>${addr}</div>
                                 <div><b>Site:</b> <a href="https://bezel.it">bezel.it</a></div>
                                 <div><b>Relevant projects:</b> <a href="https://bezel.it/showcase">bezel.it/showcase</a></div>
+                                </div>
                             `
 
                             const marker = new mapboxgl.Marker({ color })
@@ -330,8 +339,6 @@
             });
 
         });
-
-
 
         function buildSwitcher(labelText, action, checked = true) {
 
