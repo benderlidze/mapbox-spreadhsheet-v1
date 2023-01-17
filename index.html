@@ -213,8 +213,8 @@
 
                             const descr = pin['Short description']
                             const addr = pin['Location (address)']
-                            const web = pin['Link site:']
-                            const rel = pin['Relevant projects (link)']
+                            const web = clear(pin['Link site:'])
+                            const rel = clear(pin['Relevant projects (link)'])
                             const phone = pin['Contact (phone)']
                             const contName = pin['Contact (name)']
 
@@ -343,6 +343,11 @@
             });
 
         });
+
+        function clear(link){
+
+            return link.replace("http://","").replace("https://","").replace("www.","")
+        }
 
         function buildSwitcher(labelText, action, checked = true) {
 
