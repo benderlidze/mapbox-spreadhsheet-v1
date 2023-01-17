@@ -213,7 +213,7 @@
 
                             const descr = pin['Short description']
                             const addr = pin['Location (address)']
-                            const web = pin['Link site']
+                            const web = pin['Link site:']
                             const rel = pin['Relevant projects (link)']
                             const phone = pin['Contact (phone)']
                             const contName = pin['Contact (name)']
@@ -229,8 +229,8 @@
                                 <div>${descr}</div>
                                 <div><b>Category:</b> ${Category}</div>
                                 <div>${addr}</div>
-                                <div><b>Site:</b> <a href="https://bezel.it">bezel.it</a></div>
-                                <div><b>Relevant projects:</b> <a href="https://bezel.it/showcase">bezel.it/showcase</a></div>
+                                <div><b>Site:</b> <a href="${web}" style="word-break: break-all;">${web}</a></div>
+                                <div><b>Relevant projects:</b> <a href="${rel}" style="word-break: break-all;">${rel}</a></div>
                                 </div>
                             `
 
