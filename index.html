@@ -203,7 +203,11 @@
                     const pins = arr
                         //.filter(pin => +pin.lat >= -90 && +pin.lat <= 90)
                         .map(pin => {
-                            const { lat, lon, Name, Category } = pin
+
+                            const lat = +pin['Latitud (only numbers)']
+                            const lon = +pin['Longitud (only numbers)']
+                            const Name = pin['Name of the company']
+                            const { Category } = pin
                             const cat = types.find(d => d.name === Category)
                             const color = cat ? cat.color : "red"
 
