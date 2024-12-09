@@ -180,13 +180,13 @@
         // ]
 
         const types = [
-            { name: "Startup", color: "#34182f" },
-            { name: "Artist / Freelance", color: "#800080" },
-            { name: "Research Lab / University", color: "#ffffff" },
-            { name: "Incubator/Accelerator", color: "#606060" },
-            { name: "Collective", color: "#844247" },
-            { name: "VC Funds / Private investors", color: "#0A528A" },
-            { name: "Venue (eg. Museum)", color: "#495500" },
+            { name: "Startup", color: "#a80080" },
+            { name: "Artist / Freelance", color: "#a80080" },
+            { name: "Research Lab / University", color: "#a80080" },
+            { name: "Incubator/Accelerator", color: "#a80080" },
+            { name: "Collective", color: "#a80080" },
+            { name: "VC Funds / Private investors", color: "#a80080" },
+            { name: "Venue (eg. Museum)", color: "#a80080" },
         ];
 
         map.on('load', () => {
@@ -220,7 +220,7 @@
 
                             const lat = +pin['Latitud (only numbers)']
                             const lon = +pin['Longitud (only numbers)']
-                            const Name = pin['Name of the company']
+                            const Name = pin['Full name']
                             const { Category } = pin
                             const cat = types.find(d => d.name === Category)
                             const color = cat ? cat.color : "red"
