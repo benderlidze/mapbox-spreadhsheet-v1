@@ -199,6 +199,9 @@
             //         visibility: 'none'
             //     }
             // });
+            const countryLabelLayerId = 'country-label';
+            map.setPaintProperty(countryLabelLayerId, 'text-color', "black");
+            map.setPaintProperty(countryLabelLayerId, 'text-halo-color', '#ffffff');
 
             const fieldsToDisplay = [
                 'Name',
@@ -206,7 +209,8 @@
                 'Location (address)',
             ]
 
-            d3.csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vSdK8xBdWNH6TONghiqcBD3z9Y1VdodfYEOO68lxQDvObv2MePQeMiy3gG6le9XOACpTJPpC6nRN7PZ/pub?output=csv')
+            d3.csv('https://docs.google.com/spreadsheets/d/e/2PACX-1vSdK8xBdWNH6TONghiqcBD3z9Y1VdodfYEOO68lxQDvObv2MePQeMiy3gG6le9XOACpTJPpC6nRN7PZ/pub?gid=238957550&single=true&output=csv')
+
                 .then(arr => {
 
                     console.log('arr', arr);
@@ -243,16 +247,19 @@
                                 <div><b>Relevant projects:</b> <a target="_blank" href="//${rel}" style="word-break: break-all;">${rel}</a></div>
                                 </div>
                             `
+                            try {
+                                const marker = new mapboxgl.Marker({ color })
+                                    .setPopup(new mapboxgl.Popup().setHTML(text)) // add 
+                                    .setLngLat([+lon, +lat])
+                                    .addTo(map);
 
-                            const marker = new mapboxgl.Marker({ color })
-                                .setPopup(new mapboxgl.Popup().setHTML(text)) // add 
-                                .setLngLat([+lon, +lat])
-                                .addTo(map);
-
-                            main.data.push({
-                                type: Category,
-                                marker
-                            })
+                                main.data.push({
+                                    type: Category,
+                                    marker
+                                })
+                            } catch (e) {
+                                console.log('e', e);
+                            }
                         });
 
                     switchersEnableDiv.appendChild(buildSwitcher("Select All / Deselect All", checked => {
