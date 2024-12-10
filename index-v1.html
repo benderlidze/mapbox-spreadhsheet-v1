@@ -182,7 +182,7 @@
         const types = [
             { name: "Startup", color: "#a80080" },
             { name: "Artist / Freelance", color: "#a80080" },
-            { name: "Creative agency", color: "#a80080" },
+            { name: "Creative Agency", color: "#a80080" },
             { name: "Incubator / Accelerator", color: "#a80080" },
             { name: "Research Lab / University", color: "#a80080" },
             { name: "Collective", color: "#a80080" },
@@ -229,6 +229,8 @@
                             const { Category } = pin
                             const cat = types.find(d => d.name === Category)
                             const color = cat ? cat.color : "red"
+
+                            console.log('color, cat,', color, cat, Category);
 
                             const descr = pin['Short description']
                             const addr = pin['Location (address)']
